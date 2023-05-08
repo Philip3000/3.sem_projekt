@@ -12,12 +12,15 @@ Vue.createApp({
             energyPrices: [],
             message: "",
             price: "",
-            price2: ""
+            price2: "",
+            hour: "",
+            priceAtHour: 0,
         }
     },
     async Created() {
         this.GetWeatherByCity()
         this.GetEnergyPrice()
+        this.ShowPriceForHour()
     },
     methods: {
         async GetWeatherByCity() {
@@ -48,6 +51,7 @@ Vue.createApp({
                 const response = await axios.get(this.basePriceApiUrl + this.year + '/' + this.month + '-' + this.day + this.priceArea)
                 this.energyPrices = response.data
                 this.CalculateAveragePrice()
+                //this.ShowPriceForHour()
                 this.messageGiver()
             }
             catch(ex) {
@@ -61,6 +65,10 @@ Vue.createApp({
             }
             this.price = avgDKK / this.energyPrices.length
             this.price = this.price.toFixed(2)
+        },
+        async ShowPriceForHour() {
+            this.priceAtHour = this.energyPrices[this.hour].DKK_per_kWh
+            this.priceAtHour = this.priceAtHour.toFixed(2)
         }
     },
 }).mount("#app")
