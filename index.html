@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECO Sense</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+    <select v-model.lazy="city">
+        <option value="">Select City</option>
+        <option value="Asnæs">Asnæs</option>
+        <option value="Bjæverskov">Bjæverskov</option>
+        <option value="Borup">Borup</option>
+        <option value="Dianalund">Dianalund</option>
+        <option value="Ejby">Ejby</option>
+        <option value="Faxe">Faxe</option>
+        <option value="Faxe-Ladeplads">Faxe Ladeplads</option>
+        <option value="Fensmark">Fensmark</option>
+        <option value="Forlev">Forlev</option>
+        <option value="Frederiksberg">Frederiksberg</option>
+        <option value="Fuglebjerg">Fuglebjerg</option>
+        <option value="Gørlev">Gørlev</option>
+        <option value="Greve">Greve</option>
+        <option value="Gundsømagle">Gundsømagle</option>
+        <option value="Hårlev">Hårlev</option>
+        <option value="Haslev">Haslev</option>
+        <option value="Havdrup">Havdrup</option>
+        <option value="Holbæk">Holbæk</option>
+        <option value="Holeby">Holeby</option>
+        <option value="Høng">Høng</option>
+        <option value="Hørve">Hørve</option>
+        <option value="Jyderup">Jyderup</option>
+        <option value="Jyllinge">Jyllinge</option>
+        <option value="Kalundborg">Kalundborg</option>
+        <option value="Kirke-Hvalsø">Kirke Hvalsø</option>
+        <option value="Korsør">Korsør</option>
+        <option value="Køge">Køge</option>
+        <option value="Lejre">Lejre</option>
+        <option value="Maribo">Maribo</option>
+        <option value="Nakskov">Nakskov</option>
+        <option value="Næstved">Næstved</option>
+        <option value="Neder-Vindinge">Neder Vindinge</option>
+        <option value="Nørre-Alslev">Nørre Alslev</option>
+        <option value="Nykøbing-Falster">Nykøbing Falster</option>
+        <option value="Nykøbing-Sjælland">Nykøbing Sjælland</option>
+        <option value="Nyråd">Nyråd</option>
+        <option value="Osted">Osted</option>
+        <option value="Ørslev">Ørslev</option>
+        <option value="Præstø">Præstø</option>
+        <option value="Ringsted">Ringsted</option>
+        <option value="Roskilde">Roskilde</option>
+        <option value="Rødby">Rødby</option>
+        <option value="Rødbyhavn">Rødbyhavn</option>
+        <option value="Rødvig">Rødvig</option>
+        <option value="Rønnede">Rønnede</option>
+        <option value="Sakskøbing">Sakskøbing</option>
+        <option value="Skælskør">Skælskør</option>
+        <option value="Slagelse">Slagelse</option>
+        <option value="Solrød">Solrød</option>
+        <option value="Solrød-Strand">Solrød Strand</option>
+        <option value="Sorø">Sorø</option>
+        <option value="Stege">Stege</option>
+        <option value="Stenlille">Stenlille</option>
+        <option value="Store-Heddinge">Store Heddinge</option>
+        <option value="Strøby-Egede">Strøby Egede</option>
+        <option value="Stubbekøbing">Stubbekøbing</option>
+        <option value="Sundby">Sundby</option>
+        <option value="Svebølle">Svebølle</option>
+        <option value="Svinninge">Svinninge</option>
+        <option value="Svogerslev">Svogerslev</option>
+        <option value="Tølløse">Tølløse</option>
+        <option value="Tune">Tune</option>
+        <option value="Viby">Viby</option>
+        <option value="Vindinge">Vindinge</option>
+        <option value="Vipperød">Vipperød</option>
+        <option value="Vordingborg">Vordingborg</option>
+    </select>
+    <button @click="GetWeatherByCity">Show Weather</button><br>
+    <span>City: {{city}} Temperature: {{weather.temperature}} Description: {{weather.description}}</span>
+</div>
+</body>
+<script src="index.js"></script>
+</html>
