@@ -142,11 +142,14 @@
     </select>
     <button @click="GetWeatherByCity">Show Weather</button><br>
     <span>City: {{city}} Temperature: {{weather.temperature}} Description: {{weather.description}}</span><br>
-    <div v-if="allGood"><br>
+    <div v-if="warning === 'sol'"><br>
         <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png">
     </div>
-    <div v-else-if="warning">{{rainWarning}}
+    <div v-else-if="warning === 'regner'">{{rainWarning}}
          <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/bad-157437_1280.png">
+    </div>
+    <div v-else>
+        
     </div>
     <button @click="GetEnergyPrice">Show EnergyPrice</button><br>
     <span>Gnmsnit Pris per kwh: {{price2}} {{message}} {{}} </span><br>

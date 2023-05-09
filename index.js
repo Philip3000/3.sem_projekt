@@ -34,12 +34,12 @@ Vue.createApp({
                 this.rain = this.weather.description
                 if (this.rain.includes("rain")) {
                     this.rainWarning = "Det regner"
-                    this.warning = "asd"
+                    this.warning = 'regner'
                     //this.thumbSource = "https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png"
                 }
                 else if (this.rain.includes("Sunny")) {
                     this.rainWarning = "Dejligt vejr at tørre tøj udenfor"
-                    this.allGood = "asodk"
+                    this.warning = 'sol'
                     //this.thumbSource = "https://cdn.pixabay.com/photo/2013/07/13/10/32/bad-157437_1280.png"
                 }
             }
