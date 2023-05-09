@@ -13,10 +13,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="app">
-    <div>
-    <select v-model.lazy="city">
-        <option value="">Vælg by</option>
-        <option value="Albertslund">Albertslund</option>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Select City</h5>
+                    <select v-model.lazy="city" class="form-select mb-3">
+                        <option value="">Vælg by</option>
+                         <option value="Albertslund">Albertslund</option>
         <option value="Asnæs">Asnæs</option>
         <option value="Ballerup">Ballerup</option>
         <option value="Birkerød">Birkerød</option>
@@ -141,51 +145,75 @@
         <option value="Ølstykke">Ølstykke</option>
         <option value="Ørslev">Ørslev</option>
         <option value="Paris">Paris</option>
-    </select>
-    <button @click="GetWeatherByCity" class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Vis vejr</button><br>
-    <span>By: {{city}} Temperatur: {{weather.temperature}} Beskrivelse: {{weather.description}}</span><br>
-    <div v-if="warning === 'sol'"><br> {{rainWarning}}
-        <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png">
+                    </select>
+                    <p class="card-text">By: {{city}}</p>
+                    <p class="card-text">Temperatur: {{weather.temperature}}</p>
+                    <p class="card-text">Beskrivelse: {{weather.description}}</p>
+                    <button @click="GetWeatherByCity" class="btn btn-primary">Vis vejr</button>
+                    <div class="card-text" v-if="warning === 'sol'"><br> {{rainWarning}}
+                        <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png">
+                    </div>
+                    <div class="card-text" v-else-if="warning === 'regner'">{{rainWarning}}
+                        <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/bad-157437_1280.png">
+                    </div>
+                    <div v-else>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Select City</h5>
+                    <select v-model.lazy="hour">
+                        <option value="0">00:00</option>
+            <option value="1">01:00</option>
+            <option value="2">02:00</option>
+            <option value="3">03:00</option>
+            <option value="4">04:00</option>
+            <option value="5">05:00</option>
+            <option value="6">06:00</option>
+            <option value="7">07:00</option>
+            <option value="8">08:00</option>
+            <option value="9">09:00</option>
+            <option value="10">10:00</option>
+            <option value="11">11:00</option>
+            <option value="12">12:00</option>
+            <option value="13">13:00</option>
+            <option value="14">14:00</option>
+            <option value="15">15:00</option>
+            <option value="16">16:00</option>
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20">20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+            <option value="23">23:00</option>
+                    </select>
+                    <p class="card-text">Pris per time</p><br>
+                    <button @click="ShowPriceForHour()" class="btn btn-primary">Vis pris pr. time</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Gennemsnits pris i løbet af dagen</h5>
+          <p class="card-text">Gennemsnit pris per kwh: {{price2}} {{message}} {{}} </p><br>
+          <button @click="GetEnergyPrice" class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Vis dagens gennemsnit</button><br>
+        </div>
+      </div>        
     </div>
-    <div v-else-if="warning === 'regner'">{{rainWarning}}
-         <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/bad-157437_1280.png">
+        <div class="col-md-3">
+        <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Miljøvenlig strøm</h5>
+          
+          <p class="card-text">{{EnergyMessage}} {{totalFossilEnergy}}</p>
+          <button @click="ShowGreenEnergy" class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Grøn eller ej</button>
+        </div>
+      </div>
     </div>
-    <div v-else>
-
-    </div>
-    <button @click="GetEnergyPrice" class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Vis dagens gennemsnit</button><br>
-    <span>Gnmsnit Pris per kwh: {{price2}} {{message}} {{}} </span><br>
-    <select v-model.lazy="hour">
-        <option value="0">00:00</option>
-        <option value="1">01:00</option>
-        <option value="2">02:00</option>
-        <option value="3">03:00</option>
-        <option value="4">04:00</option>
-        <option value="5">05:00</option>
-        <option value="6">06:00</option>
-        <option value="7">07:00</option>
-        <option value="8">08:00</option>
-        <option value="9">09:00</option>
-        <option value="10">10:00</option>
-        <option value="11">11:00</option>
-        <option value="12">12:00</option>
-        <option value="13">13:00</option>
-        <option value="14">14:00</option>
-        <option value="15">15:00</option>
-        <option value="16">16:00</option>
-        <option value="17">17:00</option>
-        <option value="18">18:00</option>
-        <option value="19">19:00</option>
-        <option value="20">20:00</option>
-        <option value="21">21:00</option>
-        <option value="22">22:00</option>
-        <option value="23">23:00</option>
-      </select>
-      <button @click="ShowPriceForHour()"class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Vis pris pr. time</button>
-      {{priceAtHour}} <br>
-      <button @click="ShowGreenEnergy" class="btn btn-round btn-primary mb-md-0 mb-2" style="padding: 3px;">Grøn eller ej</button>
-      <span> Miljøvenlig strøm: {{EnergyMessage}} {{totalFossilEnergy}}</span>
-</div>
 </body>
-<script src="index.js"></script>
 </html>
