@@ -15,6 +15,8 @@ Vue.createApp({
             price2: "",
             hour: "",
             priceAtHour: 0,
+            rain: "",
+            rainWarning: "",
         }
     },
     async Created() {
@@ -27,6 +29,13 @@ Vue.createApp({
             try {
                 const response = await axios.get(this.baseWeatherApiUrl + this.city)
                 this.weather = response.data
+                this.rain = this.weather.description
+                if (this.rain.includes("rain")) {
+                    this.rainWarning = "Det regner"
+                }
+                else {
+                    this.rainWarning = "Dejligt vejr at tørre tøj udenfor"
+                }
             }
             catch (ex) {
                 alert(ex.message)
