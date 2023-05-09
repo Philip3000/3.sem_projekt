@@ -12,7 +12,8 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body id="app">
+<body>
+    <div id="app">
     <div class="row">
         <div class="col-md-3">
             <div class="card">
@@ -21,7 +22,7 @@
                     <select v-model.lazy="city" class="form-select mb-3">
                         <option value="">Vælg by</option>
                          <option value="Albertslund">Albertslund</option>
-        <option value="Asnæs">Asnæs</option>
+                        <option value="Asnæs">Asnæs</option>
         <option value="Ballerup">Ballerup</option>
         <option value="Birkerød">Birkerød</option>
         <option value="Bjæverskov">Bjæverskov</option>
@@ -215,5 +216,8 @@
         </div>
       </div>
     </div>
+</div>
 </body>
+<script src="index.js"></script>
+
 </html>
