@@ -29,12 +29,12 @@ Vue.createApp({
             EnergyMessage: "",
         }
     },
-    async Created() {
-        this.GetEnergyPrice()
-        this.GetWeatherByCity()
-        this.CalculateAveragePrice()
-        this.ShowPriceForHour()
-        this.ShowGreenEnergy()
+    async created() {
+        await this.GetEnergyPrice()
+        await this.GetWeatherByCity()
+        await this.CalculateAveragePrice()
+        await this.ShowPriceForHour()
+        await this.ShowGreenEnergy()
     },
     methods: {
         async GetWeatherByCity() {
@@ -45,8 +45,6 @@ Vue.createApp({
                 if (this.rain.includes("rain")) {
                     this.rainWarning = "Det regner"
                     this.warning = 'regner'
-                    //alert(this.rainWarning)
-                    //this.thumbSource = "https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png"
                 }
                 else if (this.rain.includes("sunny")) {
                     this.rainWarning = "Dejligt vejr at tørre tøj udenfor"
@@ -97,9 +95,6 @@ Vue.createApp({
         async ShowPriceForHour() {
             this.priceAtHour = this.energyPrices[this.hour].DKK_per_kWh
             this.priceAtHour = this.priceAtHour.toFixed(2)
-        },
-        async CheckForPriceArea() {
-
         },
         async ShowGreenEnergy() {
             const response = await axios.get(this.baseGreenEnergyApiUrl)
