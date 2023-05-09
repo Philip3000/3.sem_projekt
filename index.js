@@ -27,7 +27,6 @@ Vue.createApp({
             filteredObject: {},
             totalFossilEnergy: 0.0,
             EnergyMessage: "",
-            weatherCondition: "weather-sunny",
         }
     },
     async Created() {
@@ -42,15 +41,14 @@ Vue.createApp({
             try {
                 const response = await axios.get(this.baseWeatherApiUrl + this.city)
                 this.weather = response.data
-                this.rain = this.weather.description
-                this.weatherCondition = "weather-" + this.rain
+                this.rain = this.weather.description.toLowerCase()
                 if (this.rain.includes("rain")) {
                     this.rainWarning = "Det regner"
                     this.warning = 'regner'
                     //alert(this.rainWarning)
                     //this.thumbSource = "https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png"
                 }
-                else if (this.rain.includes("Sunny")) {
+                else if (this.rain.includes("sunny")) {
                     this.rainWarning = "Dejligt vejr at tørre tøj udenfor"
                     this.warning = 'sol'
                     //alert(this.rainWarning)

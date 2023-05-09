@@ -19,12 +19,3 @@ button {
     margin-bottom: 5px;
     margin-right: 5px;
 }
-.weather-sunny {
-    background-image: url(https://media.istockphoto.com/id/1007768414/photo/blue-sky-with-bright-sun-and-clouds.jpg?s=612x612&w=0&k=20&c=MGd2-v42lNF7Ie6TtsYoKnohdCfOPFSPQt5XOz4uOy4=);
-}
-.weather-rain {
-    background-image: url(https://cdn.pixabay.com/photo/2016/06/16/13/00/rain-stoppers-1461288_1280.jpg);
-}
-.weather-cloudy {
-    background-image: url(https://images.unsplash.com/photo-1548266652-99cf27701ced?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80);
-}
