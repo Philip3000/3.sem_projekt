@@ -78,4 +78,15 @@ button {
   .btn-primary:hover {
     background-color: #0056b3;
   }
+  .price-columns {
+    display: flex;
+  }
+  
+  .price-column {
+    width: 20px;
+    margin-right: 5px;
+    background-color: blue;
+    color: white;
+    text-align: center;
+  }
   
