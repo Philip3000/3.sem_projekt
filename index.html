@@ -154,8 +154,8 @@
                             <option value="Paris">Paris</option>
                         </select>
                         <p class="card-text">By: {{city}}</p>
-                        <p class="card-text">Temperatur: {{weather.temperature}}</p>
-                        <p class="card-text">Beskrivelse: {{weather.description}}</p>
+                        <p class="card-text">Temperatur: {{weatherApiData.temperature}}</p>
+                        <p class="card-text">Beskrivelse: {{weatherApiData.description}}</p>
                         <div class="card-text" v-if="warning === 'sol'"><br> {{rainWarning}}
                             <img src="https://cdn.pixabay.com/photo/2013/07/13/10/32/good-157436_1280.png">
                         </div>
@@ -230,10 +230,11 @@
             <div class="col-md-2">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">AktuelleData</h5>
-
-                        <p v-if="restApiData" class="card-text">{{temp}} : {{humi}}</p>
-                        <button @click="GetRaspberryApi" class="btn btn-round btn-primary mb-md-0 mb-2"
+                        <h5 class="card-title">Vejr i {{locationCity}}</h5>
+                        <p class="card-text">Temperatur: {{temp}}</p>
+                        <p class="card-text">Fugtighed: {{humi}}</p>
+                        <p class="card-text">Udendørs tøjophæng? {{locationWeatherMessage}}</p>
+                        <button @click="GetLocationWeather" class="btn btn-round btn-primary mb-md-0 mb-2"
                             style="padding: 3px;"> Temp/Humi</button>
                     </div>
                 </div>
@@ -243,9 +244,9 @@
                     <div class="card-body">
                         <h5 class="card-title">Miljøvenlig strøm</h5>
 
-                        <p v-if="EnergyMessage" class="card-text">{{EnergyMessage}} {{totalFossilEnergy}}</p>
-                        <button @click="ShowGreenEnergy" class="btn btn-round btn-primary mb-md-0 mb-2"
-                            style="padding: 3px;">Grøn eller ej</button>
+                        <p class="card-text"> {{totalFossilEnergy}}</p>
+                        <button @click="GetRaspberryApi" class="btn btn-round btn-primary mb-md-0 mb-2"
+                            style="padding: 3px;">Se By</button>
                     </div>
                 </div>
             </div>

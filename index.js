@@ -1,16 +1,19 @@
 Vue.createApp({
     data() {
         return {
-            baseRaspberryPiApiUrl:"https://ecosaver20230509124002.azurewebsites.net/api/Weather",
+            baseRaspberryPiApiUrl: 'https://ecosaver20230509124002.azurewebsites.net/api/Weather',
             baseWeatherApiUrl: 'https://goweather.herokuapp.com/weather/',
             basePriceApiUrl: 'https://www.elprisenligenu.dk/api/v1/prices/',
             baseGreenEnergyApiUrl: 'https://api.energidataservice.dk/dataset/ElectricityBalanceNonv?limit=2',
+            ipApiUrl: 'https://api.ipify.org?format=json',
+            geoApiUrl: 'http://ip-api.com/json/',
             city: '',
             year: 0,
             day: 0,
             month: 0,
             priceArea: "_DK2.json",
             weatherApiData: {},
+            weatherIpApiData: {},
             energyPrices: [],
             message: "",
             price: "",
@@ -28,13 +31,23 @@ Vue.createApp({
             filteredObject: {},
             totalFossilEnergy: 0.0,
             EnergyMessage: "",
-            temp:"",
-            humi:"",
-            restApiData:[],
+            temp: "",
+            humi: "",
+            restApiData: [],
             outdoorDryMessage: "",
+            locationCity: "",
+            ipAddress: "",
+            locationWeatherMessage: "",
         }
     },
     async created() {
+
+        await this.GetIpLocation()
+        await this.GetCityLocation()
+        await this.GetLocationWeather()
+        setInterval(async () => {
+            await this.GetLocationWeather();
+        }, 10000);
         await this.GetEnergyPrice()
         await this.GetRaspberryApi()
         //await this.GetWeatherByCity()
@@ -43,23 +56,50 @@ Vue.createApp({
         await this.ShowGreenEnergy()
     },
     methods: {
-        async GetRaspberryApi(){
-            try{
+        async GetIpLocation() {
+            const response = await axios.get(this.ipApiUrl)
+            this.ipAddress = response.data.ip
+        },
+        async GetCityLocation() {
+            this.GetIpLocation()
+            const response = await axios.get(this.geoApiUrl + this.ipAddress)
+            this.locationCity = response.data.city
+            this.locationCity = this.locationCity.replace(/\s+/g, "-");
+        },
+        async GetLocationWeather() {
+            try {
+                await this.GetIpLocation()
+                await this.GetCityLocation()
+                const response = await axios.get(this.baseWeatherApiUrl + this.locationCity)
+                this.weatherIpApiData = response.data
+                this.weatherFromIp = this.weatherIpApiData.description.toLowerCase()
+                if (this.weatherFromIp.includes("rain")) {
+                    this.locationWeatherMessage = "Det regner, skynd dig at tage tøj ind! "
+                    alert("Det regner, tag tøj ind")
+                }
+                else if (this.weatherFromIp.includes("sunny")) {
+                    this.locationWeatherMessage = "Solen skinner og alt er fint"
+                }
+            }
+            catch (ex) {
+                alert(ex.message)
+            }
+        },
+        async GetRaspberryApi() {
+            try {
                 const response = await axios.get(this.baseRaspberryPiApiUrl)
                 this.restApiData = response.data
                 this.temp = this.restApiData[0].temperature.toFixed(2)
-                if(this.temp > 15 && this.humi < 30 && this.weather.includes("sunny")){
+                if (this.temp > 15 && this.humi < 30 && this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du kan spare på miljøet i dag ved at hænge tøjet udenfor"
                 }
-                if(this.temp < 15 || this.humi > 30 || !this.weather.includes("sunny")) {
+                if (this.temp < 15 || this.humi > 30 || !this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du bør ikke hænge tøjet udenfor"
                 }
                 this.humi = this.restApiData[0].humidity.toFixed(2)
-
             }
-            catch(ex)
-            {
-              alert(ex.message)
+            catch (ex) {
+                alert(ex.message)
             }
 
         },
@@ -67,7 +107,7 @@ Vue.createApp({
             try {
                 const response = await axios.get(this.baseWeatherApiUrl + this.city)
                 this.weatherApiData = response.data
-                this.weather = this.weather.description.toLowerCase()
+                this.weather = this.weatherApiData.description.toLowerCase()
                 if (this.weather.includes("rain")) {
                     this.rainWarning = "Det regner"
                     this.warning = 'regner'
@@ -80,7 +120,6 @@ Vue.createApp({
                 }
             }
             catch (ex) {
-                ex.message = "Error 404: No city selected"
                 alert(ex.message)
             }
         },
@@ -90,11 +129,11 @@ Vue.createApp({
             const messageElement = document.getElementById("card3");
             if (this.price2 > 1) {
                 this.message = "PRISEN ER HØJ !!";
-                messageElement.style.color="red";
+                messageElement.style.color = "red";
             }
             if (this.price2 < 1) {
                 this.message = "PRISEN ER GOD";
-                messageElement.style.color="green";
+                messageElement.style.color = "green";
             }
         },
         async GetEnergyPrice() {
