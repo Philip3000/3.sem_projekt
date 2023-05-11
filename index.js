@@ -31,7 +31,7 @@ Vue.createApp({
     },
     async created() {
         await this.GetEnergyPrice()
-        await this.GetWeatherByCity()
+        //await this.GetWeatherByCity()
         await this.CalculateAveragePrice()
         await this.ShowPriceForHour()
         await this.ShowGreenEnergy()
