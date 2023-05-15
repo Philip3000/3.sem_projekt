@@ -89,4 +89,7 @@ button {
     color: white;
     text-align: center;
   }
-  
+.myDiv {
+    height: 100px;
+    display: flex;
+}  

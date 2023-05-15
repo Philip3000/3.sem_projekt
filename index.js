@@ -1,3 +1,6 @@
+const data = [{x: ['Dag 1', 'Dag 2', 'Dag 3'], y: [20, 14, 23], type: 'bar'}];
+Plotly.newPlot('myDiv', data)
+
 Vue.createApp({
     data() {
         return {
@@ -28,6 +31,7 @@ Vue.createApp({
             fossilCoal: 0.0,
             fossilOil: 0.0,
             fossilGas: 0.0,
+
             filteredObject: {},
             totalFossilEnergy: 0.0,
             EnergyMessage: "",
