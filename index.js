@@ -1,6 +1,3 @@
-const data = [{x: ['Dag 1', 'Dag 2', 'Dag 3'], y: [20, 14, 23], type: 'bar'}];
-Plotly.newPlot('myDiv', data)
-
 Vue.createApp({
     data() {
         return {
@@ -31,7 +28,6 @@ Vue.createApp({
             fossilCoal: 0.0,
             fossilOil: 0.0,
             fossilGas: 0.0,
-
             filteredObject: {},
             totalFossilEnergy: 0.0,
             EnergyMessage: "",
@@ -42,22 +38,19 @@ Vue.createApp({
             locationCity: "",
             ipAddress: "",
             locationWeatherMessage: "",
+            averageForDay: 0,
+            averageMessage: "",
         }
     },
     async created() {
-
-        await this.GetIpLocation()
-        await this.GetCityLocation()
+        await this.GetEnergyPrice()
         await this.GetLocationWeather()
+        await this.GetRaspberryApi()
+        await this.CalculateAveragePrice()
         setInterval(async () => {
             await this.GetLocationWeather();
-        }, 10000);
-        await this.GetEnergyPrice()
-        await this.GetRaspberryApi()
-        //await this.GetWeatherByCity()
-        await this.CalculateAveragePrice()
-        await this.ShowPriceForHour()
-        await this.ShowGreenEnergy()
+        }, 600000);
+        this.createChart()
     },
     methods: {
         async GetIpLocation() {
@@ -84,6 +77,9 @@ Vue.createApp({
                 else if (this.weatherFromIp.includes("sunny")) {
                     this.locationWeatherMessage = "Solen skinner og alt er fint"
                 }
+                else if (this.weatherFromIp.includes("cloud")) {
+                    this.locationWeatherMessage = "Det er skyet i dag, tøjet vil tørre langsomt udenfor i dag"
+                }
             }
             catch (ex) {
                 alert(ex.message)
@@ -94,13 +90,13 @@ Vue.createApp({
                 const response = await axios.get(this.baseRaspberryPiApiUrl)
                 this.restApiData = response.data
                 this.temp = this.restApiData[0].temperature.toFixed(2)
+                this.humi = this.restApiData[0].humidity.toFixed(2)
                 if (this.temp > 15 && this.humi < 30 && this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du kan spare på miljøet i dag ved at hænge tøjet udenfor"
                 }
                 if (this.temp < 15 || this.humi > 30 || !this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du bør ikke hænge tøjet udenfor"
                 }
-                this.humi = this.restApiData[0].humidity.toFixed(2)
             }
             catch (ex) {
                 alert(ex.message)
@@ -130,39 +126,126 @@ Vue.createApp({
         async messageGiver() {
             this.GetEnergyPrice()
             this.price2 = this.price
-            const messageElement = document.getElementById("card3");
+            //const messageElement = document.getElementById("card3");
             if (this.price2 > 1) {
                 this.message = "PRISEN ER HØJ !!";
-                messageElement.style.color = "red";
+                //messageElement.style.color = "red";
             }
             if (this.price2 < 1) {
                 this.message = "PRISEN ER GOD";
-                messageElement.style.color = "green";
+                //messageElement.style.color = "green";
             }
         },
         async GetEnergyPrice() {
             try {
-                const date = new Date()
-                this.year = date.getFullYear()
-                this.day = String(date.getDate()).padStart(2, '0')
-                this.month = String(date.getMonth() + 1).padStart(2, '0')
-                const response = await axios.get(this.basePriceApiUrl + this.year + '/' + this.month + '-' + this.day + this.priceArea)
-                this.energyPrices = response.data
-                this.CalculateAveragePrice()
-                //this.ShowPriceForHour()
-                this.messageGiver()
+                //Gets the date
+                this.currentDate = new Date();
+                this.currentDay = this.currentDate.getDate();
+                this.currentMonth = this.currentDate.getMonth();
+                this.currentYear = this.currentDate.getFullYear();
+                let totalAverage = 0
+                //Iterates over the last seven days
+                for (let test = 0; test < 7; test++) {
+                    this.date = new Date(this.currentYear, this.currentMonth, this.currentDay - test); //For each day, it gets the previous day
+                    this.year = this.date.getFullYear();
+                    this.day = String(this.date.getDate()).padStart(2, '0');
+                    this.month = String(this.date.getMonth() + 1).padStart(2, '0');
+                    const response = await axios.get(this.basePriceApiUrl + this.year + '/' + this.month + '-' + this.day + this.priceArea);
+                    this.energyPrices = response.data;
+                    //Calculates the average energyprice of each day
+                    let avgDKK = 0
+                    for (let i = 0; i < this.energyPrices.length; i++) {
+                        avgDKK += this.energyPrices[i].DKK_per_kWh
+                    }
+                    let price = avgDKK / this.energyPrices.length
+                    price = price.toFixed(2)
+                    this.averagePrice = price
+                    totalAverage += parseFloat(price);
+                    this.AssignAveragePrice(this.averagePrice, test); //Assigns each day it's own average value
+                }
+                //Gets a total average for the past week
+                this.weeklyAverage = totalAverage / 7
+                this.weeklyAverage = this.weeklyAverage.toFixed(2)
+                this.messageGiver();
+            } catch (ex) {
+                alert(ex.message);
             }
-            catch (ex) {
-                alert(ex.message)
+        },
+        createChart() {
+            let chartDate = new Date();
+            const chartData = [{
+                x: [chartDate.getDate(), chartDate.getDate() - 1, chartDate.getDate() - 2, chartDate.getDate() - 3, chartDate.getDate() - 4, chartDate.getDate() - 5, chartDate.getDate() - 6],
+                y: [
+                    this.averagePriceDay1,
+                    this.averagePriceDay2,
+                    this.averagePriceDay3,
+                    this.averagePriceDay4,
+                    this.averagePriceDay5,
+                    this.averagePriceDay6,
+                    this.averagePriceDay7
+                ],
+                type: 'bar'
+            }];
+
+            const layout = {
+                title: 'Gennemsnit de sidste 7 dage i DKK',
+                xaxis: {
+                    title: 'Dato: Dag i måned',
+                },
+                yaxis: {
+                    title: 'Gennemsnits pris',
+                },
+            };
+
+            Plotly.newPlot('myDiv', chartData, layout);
+
+        },
+        AssignAveragePrice(averagePrice, dayIndex) {
+            switch (dayIndex) {
+                case 0:
+                    this.averagePriceDay1 = averagePrice;
+                    break;
+                case 1:
+                    this.averagePriceDay2 = averagePrice;
+                    break;
+                case 2:
+                    this.averagePriceDay3 = averagePrice;
+                    break;
+                case 3:
+                    this.averagePriceDay4 = averagePrice;
+                    break;
+                case 4:
+                    this.averagePriceDay5 = averagePrice;
+                    break;
+                case 5:
+                    this.averagePriceDay6 = averagePrice;
+                    break;
+                case 6:
+                    this.averagePriceDay7 = averagePrice;
+                    break;
+                default:
+                    break;
             }
         },
         async CalculateAveragePrice() {
+            let todaysDate = new Date()
+            let todaysYear = todaysDate.getFullYear();
+            let todaysDay = String(todaysDate.getDate()).padStart(2, '0');
+            let todaysMonth = String(todaysDate.getMonth() + 1).padStart(2, '0');
+            const response = await axios.get(this.basePriceApiUrl + todaysYear + '/' + todaysMonth + '-' + todaysDay + this.priceArea);
+            let todaysEnergyPrices = response.data;
             let avgDKK = 0
-            for (let i = 0; i < this.energyPrices.length; i++) {
-                avgDKK += this.energyPrices[i].DKK_per_kWh
+            for (let i = 0; i < todaysEnergyPrices.length; i++) {
+                avgDKK += todaysEnergyPrices[i].DKK_per_kWh
             }
-            this.price = avgDKK / this.energyPrices.length
-            this.price = this.price.toFixed(2)
+            let price = avgDKK / this.energyPrices.length
+            this.averageForDay = price.toFixed(2)
+            if (this.averageForDay < this.weeklyAverage) {
+                this.averageMessage = "Prisen er god"
+            }
+            else if (this.averageForDay > this.weeklyAverage) {
+                this.averageMessage = "Prisen er ikke særlig god"
+            }
         },
         async ShowPriceForHour() {
             this.priceAtHour = this.energyPrices[this.hour].DKK_per_kWh
