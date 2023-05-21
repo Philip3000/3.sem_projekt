@@ -37,7 +37,7 @@ body {
     margin: 5px;
     background-image: url(https://cdn.pixabay.com/photo/2016/12/21/18/34/clouds-1923545_1280.png);
     background-color: antiquewhite;
-    font-style: monospace;
+    font-family: monospace;
 }
 button {
     position: absolute;

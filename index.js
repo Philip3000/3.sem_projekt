@@ -6,7 +6,7 @@ Vue.createApp({
             basePriceApiUrl: 'https://www.elprisenligenu.dk/api/v1/prices/',
             baseGreenEnergyApiUrl: 'https://api.energidataservice.dk/dataset/ElectricityBalanceNonv?limit=2',
             ipApiUrl: 'https://api.ipify.org?format=json',
-            geoApiUrl: 'http://ip-api.com/json/',
+            geoApiUrl: 'https://ipapi.co/',
             city: '',
             year: 0,
             day: 0,
@@ -40,6 +40,15 @@ Vue.createApp({
             locationWeatherMessage: "",
             averageForDay: 0,
             averageMessage: "",
+            averagePriceDay1: 0,
+            averagePriceDay2: 0,
+            averagePriceDay3: 0,
+            averagePriceDay4: 0,
+            averagePriceDay5: 0,
+            averagePriceDay6: 0,
+            averagePriceDay7: 0,
+            weeklyAverage: 0,
+            counter: 0,
         }
     },
     async created() {
@@ -49,20 +58,24 @@ Vue.createApp({
         await this.CalculateAveragePrice()
         setInterval(async () => {
             await this.GetLocationWeather();
-        }, 600000);
+        }, 6000000); //Opdatere hvert 'x' millisekund, vejret på ens lokation
         this.createChart()
+
     },
     methods: {
+        //Henter ip addressen
         async GetIpLocation() {
             const response = await axios.get(this.ipApiUrl)
             this.ipAddress = response.data.ip
         },
+        //Får by lokation baseret på ip addressen
         async GetCityLocation() {
             this.GetIpLocation()
-            const response = await axios.get(this.geoApiUrl + this.ipAddress)
+            const response = await axios.get(this.geoApiUrl + this.ipAddress + "/json/")
             this.locationCity = response.data.city
             this.locationCity = this.locationCity.replace(/\s+/g, "-");
         },
+        //Får vejret fra ens lokation
         async GetLocationWeather() {
             try {
                 await this.GetIpLocation()
@@ -85,16 +98,17 @@ Vue.createApp({
                 alert(ex.message)
             }
         },
+        //Henter temperatur og data fra raspberry pi api'en
         async GetRaspberryApi() {
             try {
                 const response = await axios.get(this.baseRaspberryPiApiUrl)
                 this.restApiData = response.data
                 this.temp = this.restApiData[0].temperature.toFixed(2)
                 this.humi = this.restApiData[0].humidity.toFixed(2)
-                if (this.temp > 15 && this.humi < 30 && this.weather.includes("sunny")) {
+                if (this.temp > 15 && this.humi < 40 && this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du kan spare på miljøet i dag ved at hænge tøjet udenfor"
                 }
-                if (this.temp < 15 || this.humi > 30 || !this.weather.includes("sunny")) {
+                if (this.temp < 15 || this.humi > 40 || !this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du bør ikke hænge tøjet udenfor"
                 }
             }
@@ -103,6 +117,7 @@ Vue.createApp({
             }
 
         },
+        //Får vejret baseret på byvalget fra dropdown menuen fra html siden
         async GetWeatherByCity() {
             try {
                 const response = await axios.get(this.baseWeatherApiUrl + this.city)
@@ -115,27 +130,22 @@ Vue.createApp({
                 else if (this.weather.includes("sunny")) {
                     this.rainWarning = "Dejligt vejr at tørre tøj udenfor"
                     this.warning = 'sol'
-                    //alert(this.rainWarning)
-                    //this.thumbSource = "https://cdn.pixabay.com/photo/2013/07/13/10/32/bad-157437_1280.png"
                 }
             }
             catch (ex) {
                 alert(ex.message)
             }
         },
-        async messageGiver() {
-            this.GetEnergyPrice()
-            this.price2 = this.price
-            //const messageElement = document.getElementById("card3");
-            if (this.price2 > 1) {
-                this.message = "PRISEN ER HØJ !!";
-                //messageElement.style.color = "red";
+        messageGiver() {
+            if (this.priceAtHour > this.averageForDay) {
+                this.message = "Prisen er høj lige nu";
+                
             }
-            if (this.price2 < 1) {
-                this.message = "PRISEN ER GOD";
-                //messageElement.style.color = "green";
+            if (this.priceAtHour < this.averageForDay) {
+                this.message = "Prisen er lav lige nu";
             }
         },
+        //Får energipriserne for de sidste 7 dage
         async GetEnergyPrice() {
             try {
                 //Gets the date
@@ -166,11 +176,12 @@ Vue.createApp({
                 //Gets a total average for the past week
                 this.weeklyAverage = totalAverage / 7
                 this.weeklyAverage = this.weeklyAverage.toFixed(2)
-                this.messageGiver();
+                //this.messageGiver();
             } catch (ex) {
                 alert(ex.message);
             }
         },
+        //Skaber søjlediagrammet
         createChart() {
             let chartDate = new Date();
             const chartData = [{
@@ -200,6 +211,7 @@ Vue.createApp({
             Plotly.newPlot('myDiv', chartData, layout);
 
         },
+        //Tildeler gennemsnittet fra GetEnergyPrice til dagene der har været den sidste uge
         AssignAveragePrice(averagePrice, dayIndex) {
             switch (dayIndex) {
                 case 0:
@@ -227,6 +239,7 @@ Vue.createApp({
                     break;
             }
         },
+        //Beregner gennemsnittet for den dag
         async CalculateAveragePrice() {
             let todaysDate = new Date()
             let todaysYear = todaysDate.getFullYear();
@@ -250,6 +263,7 @@ Vue.createApp({
         async ShowPriceForHour() {
             this.priceAtHour = this.energyPrices[this.hour].DKK_per_kWh
             this.priceAtHour = this.priceAtHour.toFixed(2)
+            this.messageGiver()
         },
         async ShowGreenEnergy() {
             const response = await axios.get(this.baseGreenEnergyApiUrl)
@@ -269,6 +283,12 @@ Vue.createApp({
             else {
                 this.EnergyMessage = "Energien er meget grøn: "
             }
+        },
+        Counter() {
+            this.counter = this.counter + 1
+        },
+        NoButton() {
+            alert("Det er vi kede af at høre, vi håber vi kan hjælpe i morgen :)")
         }
     },
 }).mount("#app")
