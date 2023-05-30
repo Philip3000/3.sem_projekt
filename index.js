@@ -105,10 +105,10 @@ Vue.createApp({
                 this.restApiData = response.data
                 this.temp = this.restApiData[0].temperature.toFixed(2)
                 this.humi = this.restApiData[0].humidity.toFixed(2)
-                if (this.temp > 15 && this.humi < 40 && this.weather.includes("sunny")) {
+                if (this.temp > 15 && this.humi < 50 && this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du kan spare på miljøet i dag ved at hænge tøjet udenfor"
                 }
-                if (this.temp < 15 || this.humi > 40 || !this.weather.includes("sunny")) {
+                if (this.temp < 15 || this.humi > 50 || !this.weather.includes("sunny")) {
                     this.outdoorDryMessage = "Du bør ikke hænge tøjet udenfor"
                 }
             }
